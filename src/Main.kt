@@ -113,7 +113,15 @@ fun main() {
                 }
                 3 -> {
                     println("Iniciado a cricao de pedidos...")
-                    val orderNum: Int = ordersList.size + 1
+
+                    var orderNum: Int
+
+                    val orderListLastIndex: Int = ordersList.lastIndex
+
+                    orderNum = when{
+                        ordersList.isEmpty() -> 1
+                        else -> ordersList[orderListLastIndex].orderNum + 1
+                    }
 
                     ordersList.add(Order(amount = 0.0, status = OrderStatus.DIGITANDO, orderNum = orderNum))
 
@@ -181,16 +189,23 @@ fun main() {
                                 }
                             }
                             2 -> {
-                                val doesListHaveMoreThanZeroProduct: List<OrderItem> = ordersItemsList.filter { it.orderNum == orderNum }
+                                val doesOrderListHaveMoreThanZeroProduct: List<OrderItem> = ordersItemsList.filter { it.orderNum == orderNum }
 
-                                if(doesListHaveMoreThanZeroProduct.isEmpty()){
+                                if(doesOrderListHaveMoreThanZeroProduct.isEmpty()){
                                     println("O mínimo de produtos por pedido é 1")
                                     print("Voltando ao menu do pedido...")
                                     break
                                 }
 
+                                println("Finalizando pedido...")
                                 val orderIndex: Int = ordersList.indexOfFirst { it.orderNum == orderNum }
+
+                                ordersList[orderIndex].status = OrderStatus.ACEITO
+
                                 println(ordersList[orderIndex])
+
+                                println("Pedido de número $orderNum gerado.")
+                                println("Status do pedido: ${ordersList[orderIndex].status} | Valor Total: ${ordersList[orderIndex].amount}")
                                 break
                             }
                             3 ->{
