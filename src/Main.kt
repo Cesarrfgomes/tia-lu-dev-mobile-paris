@@ -63,7 +63,7 @@ fun main() {
                     println("Digite o código do produto")
                     val productCode: Int = readln().toInt()
 
-                    val productIndex = productsList.indexOfFirst {it.productCode == productCode}
+                    val productIndex: Int = productsList.indexOfFirst {it.productCode == productCode}
 
                     while (true){
                         println("O produto escolhido foi o(a): ${productsList[productIndex].name}")
