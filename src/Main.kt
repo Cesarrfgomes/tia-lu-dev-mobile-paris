@@ -7,7 +7,7 @@ data class Product (
 )
 
 data class Order(
-    var status: String = "Aceito",
+    var status: OrderStatus,
     var amount: Double,
     var payment: String = "Pago",
     var orderNum: Int
@@ -19,6 +19,16 @@ data class OrderItem(
     var productSellPrice: Double,
     val orderNum: Int
 )
+
+enum class OrderStatus{
+    DIGITANDO,
+    ACEITO,
+    FAZENDO,
+    FEITO,
+    ESPERANDO_ENTREGADOR,
+    SAIU_PARA_ENTREGA,
+    ENTREGUE
+}
 
 fun main() {
 
@@ -105,7 +115,7 @@ fun main() {
                     println("Iniciado a cricao de pedidos...")
                     val orderNum: Int = ordersList.size + 1
 
-                    ordersList.add(Order(amount = 0.0, orderNum = orderNum))
+                    ordersList.add(Order(amount = 0.0, status = OrderStatus.DIGITANDO, orderNum = orderNum))
 
                     while (true){
 
