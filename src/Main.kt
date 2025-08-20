@@ -1,6 +1,6 @@
 data class Product (
     var name: String,
-    var description: String,
+    var description: String?,
     var price: Double,
     var qtd: Float,
     val productCode: Int
@@ -49,25 +49,50 @@ fun main() {
 
             when (selectedOption){
                 1 -> {
-                    println("Digite o nome do produto:")
-                    val productName: String = readln()
-                    println("Digite a descrição do produto")
-                    val productDescription: String = readln()
-                    println("Digite o preço do produto")
-                    val productPrice: Double = readln().toDouble()
-                    println("Digite a quantidade inicial de estoque do produto")
-                    val productQuantity: Float = readln().toFloat()
+                    while(true){
+                        println("Digite o nome do produto:")
+                        val productName: String = readln()
 
-                    val product: Product = Product(
-                        name = productName,
-                        description = productDescription,
-                        price = productPrice,
-                        qtd = productQuantity,
-                        productCode = productsList.size + 1
-                    )
+                        if(productName.isEmpty()){
+                            println("O campo nome é obrigatório")
+                            println("Saindo do cadastro de itens...")
+                            break
+                        }
 
-                    productsList.add(product)
-                    print(productsList)
+                        println("Digite a descrição do produto")
+                        val productDescription: String? = readlnOrNull()
+
+                        println("Digite o preço do produto")
+                        val productPrice: Double = readln().toDouble()
+
+                        if(productPrice.isNaN()){
+                            println("O campo preço é obrigatório")
+                            println("Saindo do cadastro de itens...")
+                            break
+                        }
+
+                        println("Digite a quantidade inicial de estoque do produto")
+                        val productQuantity: Float = readln().toFloat()
+
+                        if(productQuantity.isNaN()){
+                            println("O campo quantidade é obrigatório")
+                            println("Saindo do cadastro de itens...")
+                            break
+                        }
+
+                        val product: Product = Product(
+                            name = productName,
+                            description = productDescription,
+                            price = productPrice,
+                            qtd = productQuantity,
+                            productCode = productsList.size + 1
+                        )
+
+                        productsList.add(product)
+                        print(productsList)
+                        break
+                    }
+
                 }
                 2 -> {
                     println("Digite o código do produto")
@@ -144,6 +169,7 @@ fun main() {
                                     }
 
                                     println("Selecione um produto pelo código: ")
+                                    println("Digite 0 (zero) para voltar.")
 
                                     for(product: Product in productsList){
                                         println("Código Produto: ${product.productCode} | Nome: ${product.name} | Preço: ${product.price} | Quantidade Disponível: ${product.qtd}")
@@ -151,6 +177,9 @@ fun main() {
 
 
                                     val selectedOrderProduct: Int = readln().toInt()
+
+                                    if(selectedOrderProduct == 0) break
+
                                     val productIndex: Int = productsList.indexOfFirst {it.productCode == selectedOrderProduct}
 
                                     val productExist: Product? = productsList.find { it.productCode == selectedOrderProduct }
@@ -164,7 +193,7 @@ fun main() {
                                     val productOrderQuantity: Float = readln().toFloat()
 
                                     if(productOrderQuantity > productsList[productIndex].qtd){
-                                        println("Quantidade desejada indisponível no estoque")
+                                        println("Quantidade desejada indisponível no estoque!")
                                         break
                                     }
 
@@ -176,7 +205,7 @@ fun main() {
 
                                     ordersList[orderIndex].amount = newOrderAmount
 
-                                    println("Adicionando produto ${productsList[productIndex].name} ao pedido")
+                                    println("Adicionando produto ${productsList[productIndex].name} ao pedido...")
 
                                     ordersItemsList.add(OrderItem(
                                         productCode = productsList[productIndex].productCode,
