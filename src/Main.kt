@@ -1,3 +1,5 @@
+import jdk.jfr.Enabled
+
 data class Product (
     var name: String,
     var description: String?,
@@ -20,6 +22,12 @@ data class OrderItem(
     val orderNum: Int
 )
 
+data class DiscountCoupon(
+    var name: String,
+    var discount: Float,
+    var isActive: Boolean = true
+)
+
 enum class OrderStatus{
     DIGITANDO,
     ACEITO,
@@ -32,9 +40,11 @@ enum class OrderStatus{
 
 fun main() {
 
-    val productsList: MutableList<Product> = mutableListOf<Product>()
-    val ordersList: MutableList<Order> = mutableListOf<Order>()
-    val ordersItemsList: MutableList<OrderItem> = mutableListOf<OrderItem>()
+    val productsList: MutableList<Product> = mutableListOf()
+    val ordersList: MutableList<Order> = mutableListOf()
+    val ordersItemsList: MutableList<OrderItem> = mutableListOf()
+    val discountCouponsList: MutableList<DiscountCoupon> = mutableListOf()
+
 
     while (true){
         println("Escolha uma opção:")
@@ -43,11 +53,12 @@ fun main() {
         println("3 - Criar Pedido")
         println("4 - Atualizar Pedido")
         println("5 - Consultar Pedidos")
-        println("6 - Sair")
+        println("6 - Criar Cupom de Desconto")
+        println("7 - Sair")
 
-        val selectedOption: Int = readln().toInt()
+        val selectedMenuOption: Int = readln().toInt()
 
-            when (selectedOption){
+            when (selectedMenuOption){
                 1 -> {
                     while(true){
                         println("Digite o nome do produto:")
@@ -218,9 +229,9 @@ fun main() {
                                 }
                             }
                             2 -> {
-                                val doesOrderListHaveMoreThanZeroProduct: List<OrderItem> = ordersItemsList.filter { it.orderNum == orderNum }
+                                val doesOrderListHaveMoreThanZeroProduct: Boolean = ordersItemsList.none { it.orderNum == orderNum }
 
-                                if(doesOrderListHaveMoreThanZeroProduct.isEmpty()){
+                                if(doesOrderListHaveMoreThanZeroProduct){
                                     println("O mínimo de produtos por pedido é 1")
                                     print("Voltando ao menu do pedido...")
                                     break
@@ -248,11 +259,36 @@ fun main() {
                     }
                 }
                 6 -> {
+                    while(true){
+                        println("Digite o nome do Cupom de desconto: ")
+                        val couponName: String = readln()
+
+                        if(couponName.isEmpty()){
+                            println("O campo nome é obrigatório")
+                            println("Saindo do cadastro de itens...")
+                            break
+                        }
+
+                        val couponAlreadyExists: DiscountCoupon? = discountCouponsList.find { it.name.uppercase() == couponName.uppercase() }
+
+                        if(couponAlreadyExists !== null){
+                            println("Já existe um cupom com esse nome no sistema.")
+                            break
+                        }
+
+                        println("Digite a pocentagem de desconto (A pocentagem deve estar entre 0 e 100): ")
+                        val discountPercent: Float = readln().toFloat()
+
+                        discountCouponsList.add(DiscountCoupon(name = couponName, discount = discountPercent))
+
+                        break
+                    }
+                }
+                7 -> {
                     println("Saindo...")
                     break;
                 }
                 else -> println("Opção inválida")
             }
     }
-
 }
