@@ -1,3 +1,5 @@
+import MenusStatus.OPENED
+import MenusStatus.CLOSED
 import jdk.jfr.Enabled
 
 data class Product (
@@ -38,6 +40,11 @@ enum class OrderStatus{
     ENTREGUE
 }
 
+enum class MenusStatus{
+    OPENED,
+    CLOSED
+}
+
 fun main() {
 
     val productsList: MutableList<Product> = mutableListOf()
@@ -45,8 +52,9 @@ fun main() {
     val ordersItemsList: MutableList<OrderItem> = mutableListOf()
     val discountCouponsList: MutableList<DiscountCoupon> = mutableListOf()
 
+    var selectedMainMenuOptions: Int? = null
 
-    while (true){
+    while (selectedMainMenuOptions != 7){
         println("Escolha uma opção:")
         println("1 - Cadastrar Item")
         println("2 - Atualizar Item")
@@ -56,53 +64,51 @@ fun main() {
         println("6 - Criar Cupom de Desconto")
         println("7 - Sair")
 
-        val selectedMenuOption: Int = readln().toInt()
+        selectedMainMenuOptions = readln().toInt()
 
-            when (selectedMenuOption){
+            when (selectedMainMenuOptions){
                 1 -> {
-                    while(true){
-                        println("Digite o nome do produto:")
-                        val productName: String = readln()
+                    println("Digite o nome do produto:")
+                    val productName: String = readln()
 
-                        if(productName.isEmpty()){
-                            println("O campo nome é obrigatório")
-                            println("Saindo do cadastro de itens...")
-                            break
-                        }
-
-                        println("Digite a descrição do produto")
-                        val productDescription: String? = readlnOrNull()
-
-                        println("Digite o preço do produto")
-                        val productPrice: Double = readln().toDouble()
-
-                        if(productPrice.isNaN()){
-                            println("O campo preço é obrigatório")
-                            println("Saindo do cadastro de itens...")
-                            break
-                        }
-
-                        println("Digite a quantidade inicial de estoque do produto")
-                        val productQuantity: Float = readln().toFloat()
-
-                        if(productQuantity.isNaN()){
-                            println("O campo quantidade é obrigatório")
-                            println("Saindo do cadastro de itens...")
-                            break
-                        }
-
-                        val product: Product = Product(
-                            name = productName,
-                            description = productDescription,
-                            price = productPrice,
-                            qtd = productQuantity,
-                            productCode = productsList.size + 1
-                        )
-
-                        productsList.add(product)
-                        print(productsList)
+                    if(productName.isEmpty()){
+                        println("O campo nome é obrigatório")
+                        println("Saindo do cadastro de itens...")
                         break
                     }
+
+                    println("Digite a descrição do produto")
+                    val productDescription: String? = readlnOrNull()
+
+                    println("Digite o preço do produto")
+                    val productPrice: Double? = readlnOrNull()?.toDouble()
+
+                    if(productPrice?.isNaN() == true || productPrice == null){
+                        println("O campo preço é obrigatório")
+                        println("Saindo do cadastro de itens...")
+                        break
+                    }
+
+                    println("Digite a quantidade inicial de estoque do produto")
+                    val productQuantity: Float? = readlnOrNull()?.toFloat()
+
+                    if(productQuantity?.isNaN() == true || productQuantity == null){
+                        println("O campo quantidade é obrigatório")
+                        println("Saindo do cadastro de itens...")
+                        break
+                    }
+
+                    val product: Product = Product(
+                        name = productName,
+                        description = productDescription,
+                        price = productPrice!!,
+                        qtd = productQuantity!!,
+                        productCode = productsList.size + 1
+                    )
+
+                    productsList.add(product)
+                    print(productsList)
+                    println("Voltando ao menu principal")
 
                 }
                 2 -> {
@@ -111,7 +117,8 @@ fun main() {
 
                     val productIndex: Int = productsList.indexOfFirst {it.productCode == productCode}
 
-                    while (true){
+                    var selectedUpdateProductOption: Int? = null
+                    while (selectedUpdateProductOption != 4){
                         println("O produto escolhido foi o(a): ${productsList[productIndex].name}")
                         println("Escolha o que quer alterar")
                         println("1 - Nome")
@@ -142,7 +149,7 @@ fun main() {
                             }
                             4 -> {
                                 println("Saindo da edição de produtos...")
-                                break;
+                                selectedUpdateProductOption = 4;
                             }
                         }
                     }
@@ -161,132 +168,129 @@ fun main() {
 
                     ordersList.add(Order(amount = 0.0, status = OrderStatus.DIGITANDO, orderNum = orderNum))
 
-                    while (true){
+
+                    var selectedCreateOrder: Int? = null
+                    while (selectedCreateOrder != 3){
 
                         println("Escolha uma opcao: ")
                         println("1 - Adicionar produtos")
                         println("2 - Finalizar pedido")
                         println("3 - Cancelar Digitação do pedido")
 
-                        val selectOrderOption: Int = readln().toInt()
+                        var selectOrderOption: Int = readln().toInt()
 
                         when (selectOrderOption){
                             1 -> {
-                                while (true){
-
-                                    if (productsList.isEmpty()) {
+                                when{
+                                    productsList.isEmpty() -> {
                                         println("Nenhum produto cadastrado!")
-                                        break
                                     }
+                                    else -> {
+                                        println("Selecione um produto pelo código: ")
+                                        println("Digite 0 (zero) para voltar.")
 
-                                    println("Selecione um produto pelo código: ")
-                                    println("Digite 0 (zero) para voltar.")
+                                        for(product: Product in productsList){
+                                            println("Código Produto: ${product.productCode} | Nome: ${product.name} | Preço: ${product.price} | Quantidade Disponível: ${product.qtd}")
+                                        }
 
-                                    for(product: Product in productsList){
-                                        println("Código Produto: ${product.productCode} | Nome: ${product.name} | Preço: ${product.price} | Quantidade Disponível: ${product.qtd}")
+
+                                        val selectedOrderProduct: Int = readln().toInt()
+
+                                        if(selectedOrderProduct == 0) {
+                                            println("Voltando...")
+                                            selectedCreateOrder = 3
+                                        }
+
+                                        val productIndex: Int = productsList.indexOfFirst {it.productCode == selectedOrderProduct}
+
+                                        val productExist: Product? = productsList.find { it.productCode == selectedOrderProduct }
+
+                                        if(productExist == null){
+                                            println("Produto selecionado não encontrado!")
+                                        }
+
+                                        println("Digite a quantidade desejada do produto: ")
+                                        val productOrderQuantity: Float = readln().toFloat()
+
+                                        if(productOrderQuantity > productsList[productIndex].qtd){
+                                            println("Quantidade desejada indisponível no estoque!")
+                                        }
+
+                                        productsList[productIndex].qtd -= productOrderQuantity
+
+                                        val orderIndex: Int = ordersList.indexOfFirst { it.orderNum == orderNum }
+
+                                        val newOrderAmount: Double = ordersList[orderIndex].amount + (productOrderQuantity * productsList[productIndex].price)
+
+                                        ordersList[orderIndex].amount = newOrderAmount
+
+                                        println("Adicionando produto ${productsList[productIndex].name} ao pedido...")
+
+                                        ordersItemsList.add(OrderItem(
+                                            productCode = productsList[productIndex].productCode,
+                                            productQuantity = productOrderQuantity,
+                                            productSellPrice = productsList[productIndex].price,
+                                            orderNum = orderNum
+                                        ))
                                     }
-
-
-                                    val selectedOrderProduct: Int = readln().toInt()
-
-                                    if(selectedOrderProduct == 0) break
-
-                                    val productIndex: Int = productsList.indexOfFirst {it.productCode == selectedOrderProduct}
-
-                                    val productExist: Product? = productsList.find { it.productCode == selectedOrderProduct }
-
-                                    if(productExist == null){
-                                        println("Produto selecionado não encontrado!")
-                                        break
-                                    }
-
-                                    println("Digite a quantidade desejada do produto: ")
-                                    val productOrderQuantity: Float = readln().toFloat()
-
-                                    if(productOrderQuantity > productsList[productIndex].qtd){
-                                        println("Quantidade desejada indisponível no estoque!")
-                                        break
-                                    }
-
-                                    productsList[productIndex].qtd -= productOrderQuantity
-
-                                    val orderIndex: Int = ordersList.indexOfFirst { it.orderNum == orderNum }
-
-                                    val newOrderAmount: Double = ordersList[orderIndex].amount + (productOrderQuantity * productsList[productIndex].price)
-
-                                    ordersList[orderIndex].amount = newOrderAmount
-
-                                    println("Adicionando produto ${productsList[productIndex].name} ao pedido...")
-
-                                    ordersItemsList.add(OrderItem(
-                                        productCode = productsList[productIndex].productCode,
-                                        productQuantity = productOrderQuantity,
-                                        productSellPrice = productsList[productIndex].price,
-                                        orderNum = orderNum
-                                    ))
-
-                                    break
                                 }
                             }
                             2 -> {
                                 val doesOrderListHaveMoreThanZeroProduct: Boolean = ordersItemsList.none { it.orderNum == orderNum }
 
-                                if(doesOrderListHaveMoreThanZeroProduct){
-                                    println("O mínimo de produtos por pedido é 1")
-                                    print("Voltando ao menu do pedido...")
-                                    break
+                                when{
+                                    doesOrderListHaveMoreThanZeroProduct -> {
+                                        println("O mínimo de produtos por pedido é 1")
+                                        println("Voltando ao menu do pedido...")
+                                    }
+                                    else ->{
+                                        println("Finalizando pedido...")
+                                        val orderIndex: Int = ordersList.indexOfFirst { it.orderNum == orderNum }
+
+                                        ordersList[orderIndex].status = OrderStatus.ACEITO
+
+                                        println(ordersList[orderIndex])
+
+                                        println("Pedido de número $orderNum gerado.")
+                                        println("Status do pedido: ${ordersList[orderIndex].status} | Valor Total: ${ordersList[orderIndex].amount}")
+                                    }
                                 }
-
-                                println("Finalizando pedido...")
-                                val orderIndex: Int = ordersList.indexOfFirst { it.orderNum == orderNum }
-
-                                ordersList[orderIndex].status = OrderStatus.ACEITO
-
-                                println(ordersList[orderIndex])
-
-                                println("Pedido de número $orderNum gerado.")
-                                println("Status do pedido: ${ordersList[orderIndex].status} | Valor Total: ${ordersList[orderIndex].amount}")
-                                break
                             }
                             3 ->{
                                 println("Cancelando digitação do pedido...")
 
                                 ordersList.removeIf { it.orderNum == orderNum }
                                 ordersItemsList.removeIf { it.orderNum == orderNum }
-                                break
+                                selectedCreateOrder = 3
                             }
                         }
                     }
                 }
                 6 -> {
-                    while(true){
-                        println("Digite o nome do Cupom de desconto: ")
-                        val couponName: String = readln()
+                    println("Digite o nome do Cupom de desconto: ")
+                    val couponName: String = readln()
 
-                        if(couponName.isEmpty()){
-                            println("O campo nome é obrigatório")
-                            println("Saindo do cadastro de itens...")
-                            break
-                        }
-
-                        val couponAlreadyExists: DiscountCoupon? = discountCouponsList.find { it.name.uppercase() == couponName.uppercase() }
-
-                        if(couponAlreadyExists !== null){
-                            println("Já existe um cupom com esse nome no sistema.")
-                            break
-                        }
-
-                        println("Digite a pocentagem de desconto (A pocentagem deve estar entre 0 e 100): ")
-                        val discountPercent: Float = readln().toFloat()
-
-                        discountCouponsList.add(DiscountCoupon(name = couponName, discount = discountPercent))
-
-                        break
+                    if(couponName.isEmpty()){
+                        println("O campo nome é obrigatório")
+                        println("Saindo do cadastro de itens...")
+                        selectedMainMenuOptions = 0
                     }
+
+                    val couponAlreadyExists: DiscountCoupon? = discountCouponsList.find { it.name.uppercase() == couponName.uppercase() }
+
+                    if(couponAlreadyExists !== null){
+                        println("Já existe um cupom com esse nome no sistema.")
+                        selectedMainMenuOptions = 0
+                    }
+
+                    println("Digite a pocentagem de desconto (A pocentagem deve estar entre 0 e 100): ")
+                    val discountPercent: Float = readln().toFloat()
+
+                    discountCouponsList.add(DiscountCoupon(name = couponName, discount = discountPercent))
                 }
                 7 -> {
                     println("Saindo...")
-                    break;
+                    selectedMainMenuOptions = 7
                 }
                 else -> println("Opção inválida")
             }
