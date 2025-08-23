@@ -110,7 +110,7 @@ fun main() {
                 }
                 2 -> {
                     println("Digite o código do produto")
-                    productsList.forEach { println("Código: ${it.productCode} | Nome: ${it.name}") }
+                    productsList.forEach { println("Código: ${it.productCode} | Nome: ${it.name} || Prço: R$${it.price}") }
                     val productCode: Int = readln().toInt()
 
                     val productIndex: Int = productsList.indexOfFirst {it.productCode == productCode}
@@ -221,7 +221,7 @@ fun main() {
                                         println("Digite 0 (zero) para voltar.")
 
                                         for(product: Product in productsList){
-                                            println("Código Produto: ${product.productCode} | Nome: ${product.name} | Preço: ${product.price} | Quantidade Disponível: ${product.qtd}")
+                                            println("Código Produto: ${product.productCode} | Nome: ${product.name} | Preço: R$${product.price} | Quantidade Disponível: ${product.qtd}")
                                         }
 
 
@@ -275,16 +275,57 @@ fun main() {
                                         println("Voltando ao menu do pedido...")
                                     }
                                     else ->{
-                                        println("Finalizando pedido...")
-                                        val orderIndex: Int = ordersList.indexOfFirst { it.orderNum == orderNum }
+                                        println("Você possui algum cupom de desconto? Sim (S) - Não (N)")
+                                        var doesHaveADiscountCoupon: String? = readlnOrNull()
 
-                                        ordersList[orderIndex].status = OrderStatus.ACEITO
+                                        if(discountCouponsList.isEmpty()){
+                                            println("Desculpe! Não temos cupons de desconto dispiníveis no momento.")
+                                            doesHaveADiscountCoupon = null
+                                        }
 
-                                        println(ordersList[orderIndex])
+                                        when{
+                                            doesHaveADiscountCoupon == null || doesHaveADiscountCoupon.isEmpty() || doesHaveADiscountCoupon == "N" -> {
+                                                println("Finalizando pedido...")
+                                                val orderIndex: Int = ordersList.indexOfFirst { it.orderNum == orderNum }
 
-                                        println("Pedido de número $orderNum gerado.")
-                                        println("Status do pedido: ${ordersList[orderIndex].status} | Valor Total: ${ordersList[orderIndex].amount}")
-                                        selectedCreateOrder = 4
+                                                ordersList[orderIndex].status = OrderStatus.ACEITO
+
+
+                                                println("Pedido de número $orderNum gerado.")
+                                                println("Status do pedido: ${ordersList[orderIndex].status} | Valor Total: ${ordersList[orderIndex].amount}")
+                                                selectedCreateOrder = 4
+                                            }
+                                            else -> {
+                                                val orderIndex: Int = ordersList.indexOfFirst { it.orderNum == orderNum }
+
+                                                println("Insira o cupom de desconto:")
+
+                                                var discountCoupon: String? = null
+
+                                                var discountCouponExists: DiscountCoupon? = null
+
+                                                while (discountCouponExists == null){
+                                                    discountCoupon = readlnOrNull()
+
+                                                    discountCouponExists = discountCouponsList.find {it.name.equals(discountCoupon, ignoreCase = true)}
+                                                    if(discountCouponExists == null){
+                                                        println("Cupom de desconto não encontrado")
+                                                    }
+
+                                                    var discount: Float? = discountCouponExists?.discount
+
+                                                    val orderAmount = ordersList[orderIndex].amount
+
+                                                    ordersList[orderIndex].amount = orderAmount - ((orderAmount * discount!!) / 100)
+
+                                                    ordersList[orderIndex].status = OrderStatus.ACEITO
+
+                                                    println("Pedido de número $orderNum gerado.")
+                                                    println("Status do pedido: ${ordersList[orderIndex].status} | Valor Total: ${ordersList[orderIndex].amount}")
+                                                    selectedCreateOrder = 4
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
