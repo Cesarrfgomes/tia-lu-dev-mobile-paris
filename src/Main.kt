@@ -67,7 +67,7 @@ fun main() {
         selectedMainMenuOptions = readln().toInt()
 
             when (selectedMainMenuOptions){
-                1 -> {
+               1 -> {
                     println("Digite o nome do produto:")
                     val productName: String = readln()
 
@@ -113,6 +113,7 @@ fun main() {
                 }
                 2 -> {
                     println("Digite o código do produto")
+                    productsList.forEach { println("Código: ${it.productCode} | Nome: ${it.name}") }
                     val productCode: Int = readln().toInt()
 
                     val productIndex: Int = productsList.indexOfFirst {it.productCode == productCode}
@@ -170,7 +171,7 @@ fun main() {
 
 
                     var selectedCreateOrder: Int? = null
-                    while (selectedCreateOrder != 3){
+                    while (selectedCreateOrder != 3 && selectedCreateOrder !=4){
 
                         println("Escolha uma opcao: ")
                         println("1 - Adicionar produtos")
@@ -253,6 +254,7 @@ fun main() {
 
                                         println("Pedido de número $orderNum gerado.")
                                         println("Status do pedido: ${ordersList[orderIndex].status} | Valor Total: ${ordersList[orderIndex].amount}")
+                                        selectedCreateOrder = 4
                                     }
                                 }
                             }
