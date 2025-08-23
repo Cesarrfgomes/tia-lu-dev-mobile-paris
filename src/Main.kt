@@ -1,7 +1,3 @@
-import MenusStatus.OPENED
-import MenusStatus.CLOSED
-import jdk.jfr.Enabled
-
 data class Product (
     var name: String,
     var description: String?,
@@ -68,41 +64,46 @@ fun main() {
 
             when (selectedMainMenuOptions){
                1 -> {
-                    println("Digite o nome do produto:")
-                    val productName: String = readln()
+                   var productName: String? = null
+                   println("Insira o NOME do produto:")
+                   while(productName == null || productName.isEmpty()){
+                       print("-> ")
+                       productName = readlnOrNull()
+                       if(productName == null || productName.isEmpty()){
+                           println("O NOME do produto inserido é inválido. Tente novamente.")
+                       }
+                   }
 
-                    if(productName.isEmpty()){
-                        println("O campo nome é obrigatório")
-                        println("Saindo do cadastro de itens...")
-                        break
-                    }
+                   println("Insira a DESCRIÇÃO do produto:")
+                   var productDescription: String? = readlnOrNull()
 
-                    println("Digite a descrição do produto")
-                    val productDescription: String? = readlnOrNull()
 
-                    println("Digite o preço do produto")
-                    val productPrice: Double? = readlnOrNull()?.toDouble()
+                   var productPrice: Double? = null
+                   println("Insira o PREÇO do produto:")
+                   while(productPrice == null){
+                       print("-> ")
+                       productPrice = readlnOrNull()?.toDoubleOrNull()
+                       if(productPrice == null){
+                           println("O PREÇO do produto inserido é inválido. Tente novamente.")
+                       }
+                   }
 
-                    if(productPrice?.isNaN() == true || productPrice == null){
-                        println("O campo preço é obrigatório")
-                        println("Saindo do cadastro de itens...")
-                        break
-                    }
 
-                    println("Digite a quantidade inicial de estoque do produto")
-                    val productQuantity: Float? = readlnOrNull()?.toFloat()
-
-                    if(productQuantity?.isNaN() == true || productQuantity == null){
-                        println("O campo quantidade é obrigatório")
-                        println("Saindo do cadastro de itens...")
-                        break
-                    }
+                   var productQuantity: Float? = null
+                   println("Insira a QUANTIDADE inicial do produto:")
+                   while(productQuantity == null){
+                       print("-> ")
+                       productQuantity = readlnOrNull()?.toFloatOrNull()
+                       if(productQuantity == null){
+                           println("A QUANTIDADE inicial do produto é inválida. Tente novamente.")
+                       }
+                   }
 
                     val product: Product = Product(
                         name = productName,
                         description = productDescription,
-                        price = productPrice!!,
-                        qtd = productQuantity!!,
+                        price = productPrice,
+                        qtd = productQuantity,
                         productCode = productsList.size + 1
                     )
 
