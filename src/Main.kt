@@ -71,7 +71,8 @@ fun main() {
                    }
 
                    println("Insira a DESCRIÇÃO do produto:")
-                   var productDescription: String? = readlnOrNull()
+                   print("-> ")
+                   val productDescription: String? = readlnOrNull()
 
 
                    var productPrice: Double? = null
@@ -144,6 +145,7 @@ fun main() {
                             }
                             2 ->{
                                 println("Digite a DESCRIÇÃO para qual deseja alterar:")
+                                print("-> ")
                                 val newProductDescription: String = readln()
                                 productsList[productIndex].description = newProductDescription
                                 print(productsList[productIndex].description)
@@ -229,7 +231,7 @@ fun main() {
 
                                         if(selectedOrderProduct == 0) {
                                             println("Voltando...")
-                                            selectedCreateOrder = 3
+                                            selectedCreateOrder = 4
                                         }
 
                                         val productIndex: Int = productsList.indexOfFirst {it.productCode == selectedOrderProduct}
