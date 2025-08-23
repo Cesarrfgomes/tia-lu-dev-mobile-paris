@@ -36,10 +36,6 @@ enum class OrderStatus{
     ENTREGUE
 }
 
-enum class MenusStatus{
-    OPENED,
-    CLOSED
-}
 
 fun main() {
 
@@ -81,7 +77,7 @@ fun main() {
                    var productPrice: Double? = null
                    println("Insira o PREÇO do produto:")
                    while(productPrice == null || productPrice < 0.0){
-                       print("-> ")
+                       print("-> R$ ")
                        productPrice = readlnOrNull()?.toDoubleOrNull()
                        if(productPrice == null || productPrice < 0.0){
                            println("O PREÇO do produto inserido é inválido. Tente novamente.")
@@ -157,7 +153,7 @@ fun main() {
                                 var newProductPrice: Double? = null
 
                                 while(newProductPrice == null || newProductPrice < 0.0){
-                                    print("-> ")
+                                    print("-> R$ ")
                                     newProductPrice = readln().toDoubleOrNull()
                                     if(newProductPrice == null || newProductPrice < 0.0){
                                         println("O novo PREÇO do produto é inválido. Tente novamente.")
@@ -304,23 +300,35 @@ fun main() {
                 }
                 6 -> {
                     println("Digite o nome do Cupom de desconto: ")
-                    val couponName: String = readln()
+                    var couponName: String? = null
 
-                    if(couponName.isEmpty()){
-                        println("O campo nome é obrigatório")
-                        println("Saindo do cadastro de itens...")
-                        selectedMainMenuOptions = 0
+
+                    var couponAlreadyExists: DiscountCoupon? = null
+
+                    while(couponName == null || couponName.isEmpty() || couponAlreadyExists != null){
+                        print("-> ")
+                        couponName = readlnOrNull()
+                        if(couponName == null || couponName.isEmpty()){
+                            println("O NOME do cupom inserido é inválido")
+                        }
+
+                        couponAlreadyExists = discountCouponsList.find { it.name.equals(couponName, ignoreCase = true) }
+
+                        if(couponAlreadyExists !== null){
+                            println("Já existe um cupom com esse nome no sistema.")
+                        }
                     }
 
-                    val couponAlreadyExists: DiscountCoupon? = discountCouponsList.find { it.name.uppercase() == couponName.uppercase() }
-
-                    if(couponAlreadyExists !== null){
-                        println("Já existe um cupom com esse nome no sistema.")
-                        selectedMainMenuOptions = 0
-                    }
 
                     println("Digite a pocentagem de desconto (A pocentagem deve estar entre 0 e 100): ")
-                    val discountPercent: Float = readln().toFloat()
+                    var discountPercent: Float? = null
+                    while(discountPercent == null || discountPercent < 0.0){
+                        print("-> ")
+                        discountPercent = readln().toFloatOrNull()
+                        if(discountPercent == null || discountPercent < 0.0){
+                            println("Valor inserido para a PORCENTAGEM de desconto inválido. Tente novamente.")
+                        }
+                    }
 
                     discountCouponsList.add(DiscountCoupon(name = couponName, discount = discountPercent))
                 }
