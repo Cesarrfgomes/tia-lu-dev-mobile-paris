@@ -310,21 +310,25 @@ fun main() {
                                                     discountCoupon = readlnOrNull()
 
                                                     discountCouponExists = discountCouponsList.find {it.name.equals(discountCoupon, ignoreCase = true)}
-                                                    if(discountCouponExists == null){
-                                                        println("Cupom de desconto não encontrado")
+
+                                                    when{
+                                                        discountCouponExists == null -> {
+                                                            println("Cupom de desconto não encontrado")
+                                                        }
+                                                        else -> {
+                                                            var discount: Float? = discountCouponExists?.discount
+
+                                                            val orderAmount = ordersList[orderIndex].amount
+
+                                                            ordersList[orderIndex].amount = orderAmount - ((orderAmount * discount!!) / 100)
+
+                                                            ordersList[orderIndex].status = OrderStatus.ACEITO
+
+                                                            println("Pedido de número $orderNum gerado.")
+                                                            println("Status do pedido: ${ordersList[orderIndex].status} | Valor Total: ${ordersList[orderIndex].amount}")
+                                                            selectedCreateOrder = 4
+                                                        }
                                                     }
-
-                                                    var discount: Float? = discountCouponExists?.discount
-
-                                                    val orderAmount = ordersList[orderIndex].amount
-
-                                                    ordersList[orderIndex].amount = orderAmount - ((orderAmount * discount!!) / 100)
-
-                                                    ordersList[orderIndex].status = OrderStatus.ACEITO
-
-                                                    println("Pedido de número $orderNum gerado.")
-                                                    println("Status do pedido: ${ordersList[orderIndex].status} | Valor Total: ${ordersList[orderIndex].amount}")
-                                                    selectedCreateOrder = 4
                                                 }
                                             }
                                         }
@@ -342,58 +346,59 @@ fun main() {
                     }
                 }
                 4 -> {
+                    val availableOrdersToChangeStatus: List<Order> = ordersList.filter {it.status != OrderStatus.ENTREGUE}
+                    when{
+                        availableOrdersToChangeStatus.isEmpty() -> println("Sem pedidos disponiveis para alterar o status.")
+                        else -> {
+                            println("--- Lista de pedidos disponiveis ---")
+                            println("Escolha um pedido pelo codigo:")
 
-                    //orderList - lista de pedidos
-                    //orderNum - numero do pedido
-                    if (ordersList.isEmpty()){
-                        println("Sem pedido selecionado")
-                    }
-                    else{
-                        println("Digite o número do pedido que vai receber atualização: ")
-                        ordersList.forEach {
-                            println("Pedido numero: ${it.orderNum}")
-                            val PedidoSelecionado = readln().toInt()
-                            var NumeroPedido = -1
+                            availableOrdersToChangeStatus.forEach { println("Codigo: ${it.orderNum} | Valor Total: ${it.amount} | Status: ${it.status}") }
 
-                            var i = 0
-                            for (i in ordersList.indices){
-                                if (ordersList[i].orderNum == PedidoSelecionado){
-                                    NumeroPedido = i
-                                    break
+                            val selectedOrder: Int = readln().toInt()
+
+                            val orderIndex: Int = ordersList.indexOfFirst { it.orderNum == selectedOrder }
+
+                            println("--- Lista de Status ---")
+
+                            println("1 - ACEITO")
+                            println("2 - FAZENDO")
+                            println("3 - FEITO")
+                            println("4 - ESPERANDO_ENTREGADOR")
+                            println("5 - SAIU_PARA_ENTREGA")
+                            println("6 - ENTREGUE")
+                            val selectedStatus: Int = readln().toInt()
+
+                            when (selectedStatus){
+                                1 -> {
+                                    println("Alterando status para ACEITO")
+                                    ordersList[orderIndex].status = OrderStatus.ACEITO
                                 }
-                            }
-                            if (NumeroPedido == -1){
-                                println("Pedido não existe.")
-                            }
-                            else{
-                                var opcaoAtualizacao: Int? = null
-                                while (opcaoAtualizacao != 2){
-                                    println("O que deseja atualizar no pedido?")
-                                    println("1 - Alterar status")
-                                    println("2 - Voltar")
-                                    opcaoAtualizacao = readln().toInt()
-
-                                    when(opcaoAtualizacao){
-                                        1 -> {
-                                            println("O novo status vai ser: ")
-                                            for (i in 0 .. OrderStatus.entries.size){
-                                                val status = OrderStatus.entries[i]
-                                                println("${i + 1} - $status")
-                                            }
-                                            val IndiceNovo = readln().toInt() - 1
-                                            if (IndiceNovo >= 0 && IndiceNovo < OrderStatus.entries.size) {
-                                                ordersList[NumeroPedido].status = OrderStatus.entries[IndiceNovo]
-                                                println("Status atualizado para ${ordersList[NumeroPedido].status}")
-                                            } else {
-                                                println("Status inválido.")
-                                            }
-                                        }
-                                    }
+                                2 -> {
+                                    println("Alterando status para FAZENDO")
+                                    ordersList[orderIndex].status = OrderStatus.FAZENDO
                                 }
+                                3 -> {
+                                    println("Alterando status para FEITO")
+                                    ordersList[orderIndex].status = OrderStatus.FEITO
+                                }
+                                4 -> {
+                                    println("Alterando status para ESPERANDO_ENTREGADOR")
+                                    ordersList[orderIndex].status = OrderStatus.ESPERANDO_ENTREGADOR
+                                }
+                                5 -> {
+                                    println("Alterando status para SAIU_PARA_ENTREGA")
+                                    ordersList[orderIndex].status = OrderStatus.SAIU_PARA_ENTREGA
+                                }
+                                6 -> {
+                                    println("Alterando status para ENTREGUE")
+                                    ordersList[orderIndex].status = OrderStatus.ENTREGUE
+                                }
+                                else -> println("Opção inválida. Nenhuma alteração será realizada.")
                             }
+
                         }
                     }
-
                 }
                 5 -> {
                     if (ordersList.isEmpty()) {
@@ -415,7 +420,7 @@ fun main() {
                                 }
                             }
                             if (!Item) {
-                                println("Esse pedido nao tem itens")
+                                println("Esse pedido não tem itens")
                             }
                         }
                     }
