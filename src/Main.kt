@@ -55,6 +55,7 @@ fun main() {
         println("5 - Consultar Pedidos")
         println("6 - Criar Cupom de Desconto")
         println("7 - Sair")
+        print("-> ")
 
         selectedMainMenuOptions = readln().toInt()
 
@@ -74,7 +75,6 @@ fun main() {
                    print("-> ")
                    val productDescription: String? = readlnOrNull()
 
-
                    var productPrice: Double? = null
                    println("Insira o PREÇO do produto:")
                    while(productPrice == null || productPrice < 0.0){
@@ -84,7 +84,6 @@ fun main() {
                            println("O PREÇO do produto inserido é inválido. Tente novamente.")
                        }
                    }
-
 
                    var productQuantity: Float? = null
                    println("Insira a QUANTIDADE inicial do produto:")
@@ -110,82 +109,89 @@ fun main() {
 
                 }
                 2 -> {
-                    println("Digite o código do produto")
-                    productsList.forEach { println("Código: ${it.productCode} | Nome: ${it.name} || Prço: R$${it.price}") }
-                    val productCode: Int = readln().toInt()
+                    when{
+                        productsList.isEmpty() -> println("Nenhum produto cadastrado no menu de itens.")
+                        else -> {
+                            println("Digite o código do produto")
+                            productsList.forEach { println("Código: ${it.productCode} | Nome: ${it.name} || Prço: R$${it.price}") }
+                            print("-> ")
+                            val productCode: Int = readln().toInt()
 
-                    val productIndex: Int = productsList.indexOfFirst {it.productCode == productCode}
+                            val productIndex: Int = productsList.indexOfFirst {it.productCode == productCode}
 
-                    var selectedUpdateProductOption: Int? = null
-                    while (selectedUpdateProductOption != 5){
-                        println("O produto escolhido foi o(a): ${productsList[productIndex].name}")
-                        println("Escolha o que quer alterar")
-                        println("1 - Nome")
-                        println("2 - Descrição")
-                        println("3 - Preço")
-                        println("4 - Quantidade")
-                        println("5 - Voltar")
+                            var selectedUpdateProductOption: Int? = null
+                            while (selectedUpdateProductOption != 5){
+                                println("O produto escolhido foi o(a): ${productsList[productIndex].name}")
+                                println("Escolha o que quer alterar")
+                                println("1 - Nome")
+                                println("2 - Descrição")
+                                println("3 - Preço")
+                                println("4 - Quantidade")
+                                println("5 - Voltar")
 
-                        val selectedProductOption: Int = readln().toInt()
+                                val selectedProductOption: Int = readln().toInt()
 
-                        when(selectedProductOption){
-                            1 -> {
-                                println("Digite o NOME para qual deseja alterar:")
-                                var newProductName: String? = null
-                                while(newProductName == null || newProductName.isEmpty()){
-                                    print("-> ")
-                                    newProductName = readlnOrNull()
-                                    if(newProductName == null || newProductName.isEmpty()){
-                                        println("O novo NOME do produto é inválido. Tente novamente.")
+                                when(selectedProductOption){
+                                    1 -> {
+                                        println("Digite o NOME para qual deseja alterar:")
+                                        var newProductName: String? = null
+                                        while(newProductName == null || newProductName.isEmpty()){
+                                            print("-> ")
+                                            newProductName = readlnOrNull()
+                                            if(newProductName == null || newProductName.isEmpty()){
+                                                println("O novo NOME do produto é inválido. Tente novamente.")
+                                            }
+                                        }
+
+                                        productsList[productIndex].name = newProductName
+                                        print(productsList[productIndex].name)
+                                    }
+                                    2 ->{
+                                        println("Digite a DESCRIÇÃO para qual deseja alterar:")
+                                        print("-> ")
+                                        val newProductDescription: String = readln()
+                                        productsList[productIndex].description = newProductDescription
+                                        print(productsList[productIndex].description)
+                                    }
+                                    3 -> {
+                                        println("Digite o PREÇO para qual deseja alterar:")
+                                        var newProductPrice: Double? = null
+
+                                        while(newProductPrice == null || newProductPrice < 0.0){
+                                            print("-> R$ ")
+                                            newProductPrice = readln().toDoubleOrNull()
+                                            if(newProductPrice == null || newProductPrice < 0.0){
+                                                println("O novo PREÇO do produto é inválido. Tente novamente.")
+                                            }
+                                        }
+
+                                        productsList[productIndex].price = newProductPrice
+                                        print(productsList[productIndex].price)
+                                    }
+                                    4 -> {
+                                        println("Digite a QUANTIDADE para qual deseja alterar:")
+                                        var newProductQuantity: Float? = null
+
+                                        while(newProductQuantity == null || newProductQuantity < 0.0){
+                                            print("-> ")
+                                            newProductQuantity = readln().toFloatOrNull()
+                                            if(newProductQuantity == null || newProductQuantity < 0.0){
+                                                println("O novo PREÇO do produto é inválido. Tente novamente.")
+                                            }
+                                        }
+
+                                        productsList[productIndex].qtd = newProductQuantity
+                                        print(productsList[productIndex].qtd)
+                                    }
+                                    5 -> {
+                                        println("Saindo da edição de produtos...")
+                                        selectedUpdateProductOption = 5;
                                     }
                                 }
-
-                                productsList[productIndex].name = newProductName
-                                print(productsList[productIndex].name)
-                            }
-                            2 ->{
-                                println("Digite a DESCRIÇÃO para qual deseja alterar:")
-                                print("-> ")
-                                val newProductDescription: String = readln()
-                                productsList[productIndex].description = newProductDescription
-                                print(productsList[productIndex].description)
-                            }
-                            3 -> {
-                                println("Digite o PREÇO para qual deseja alterar:")
-                                var newProductPrice: Double? = null
-
-                                while(newProductPrice == null || newProductPrice < 0.0){
-                                    print("-> R$ ")
-                                    newProductPrice = readln().toDoubleOrNull()
-                                    if(newProductPrice == null || newProductPrice < 0.0){
-                                        println("O novo PREÇO do produto é inválido. Tente novamente.")
-                                    }
-                                }
-
-                                productsList[productIndex].price = newProductPrice
-                                print(productsList[productIndex].price)
-                            }
-                            4 -> {
-                                println("Digite a QUANTIDADE para qual deseja alterar:")
-                                var newProductQuantity: Float? = null
-
-                                while(newProductQuantity == null || newProductQuantity < 0.0){
-                                    print("-> ")
-                                    newProductQuantity = readln().toFloatOrNull()
-                                    if(newProductQuantity == null || newProductQuantity < 0.0){
-                                        println("O novo PREÇO do produto é inválido. Tente novamente.")
-                                    }
-                                }
-
-                                productsList[productIndex].qtd = newProductQuantity
-                                print(productsList[productIndex].qtd)
-                            }
-                            5 -> {
-                                println("Saindo da edição de produtos...")
-                                selectedUpdateProductOption = 5;
                             }
                         }
                     }
+
                 }
                 3 -> {
                     println("Iniciado a cricao de pedidos...")
@@ -409,7 +415,7 @@ fun main() {
                             val pedido = ordersList[i]
                             println("Pedido numero: ${pedido.orderNum}")
                             println("Status: ${pedido.status}")
-                            println("Total: ${pedido.amount}R$")
+                            println("Total: R$ ${pedido.amount}")
 
                             println("Itens do pedido:")
                             var Item = false
