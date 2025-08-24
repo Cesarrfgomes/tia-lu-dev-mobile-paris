@@ -341,6 +341,85 @@ fun main() {
                         }
                     }
                 }
+                4 -> {
+
+                    //orderList - lista de pedidos
+                    //orderNum - numero do pedido
+                    if (ordersList.isEmpty()){
+                        println("Sem pedido selecionado")
+                    }
+                    else{
+                        println("Digite o número do pedido que vai receber atualização: ")
+                        ordersList.forEach {
+                            println("Pedido numero: ${it.orderNum}")
+                            val PedidoSelecionado = readln().toInt()
+                            var NumeroPedido = -1
+
+                            var i = 0
+                            for (i in ordersList.indices){
+                                if (ordersList[i].orderNum == PedidoSelecionado){
+                                    NumeroPedido = i
+                                    break
+                                }
+                            }
+                            if (NumeroPedido == -1){
+                                println("Pedido não existe.")
+                            }
+                            else{
+                                var opcaoAtualizacao: Int? = null
+                                while (opcaoAtualizacao != 2){
+                                    println("O que deseja atualizar no pedido?")
+                                    println("1 - Alterar status")
+                                    println("2 - Voltar")
+                                    opcaoAtualizacao = readln().toInt()
+
+                                    when(opcaoAtualizacao){
+                                        1 -> {
+                                            println("O novo status vai ser: ")
+                                            for (i in 0 .. OrderStatus.entries.size){
+                                                val status = OrderStatus.entries[i]
+                                                println("${i + 1} - $status")
+                                            }
+                                            val IndiceNovo = readln().toInt() - 1
+                                            if (IndiceNovo >= 0 && IndiceNovo < OrderStatus.entries.size) {
+                                                ordersList[NumeroPedido].status = OrderStatus.entries[IndiceNovo]
+                                                println("Status atualizado para ${ordersList[NumeroPedido].status}")
+                                            } else {
+                                                println("Status inválido.")
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+                5 -> {
+                    if (ordersList.isEmpty()) {
+                        println("Nenhum pedido cadastrado.")
+                    } else {
+                        println("*** Exibindo todos os pedidos ***")
+                        for (i in 0..ordersList.size - 1) {
+                            val pedido = ordersList[i]
+                            println("Pedido numero: ${pedido.orderNum}")
+                            println("Status: ${pedido.status}")
+                            println("Total: ${pedido.amount}R$")
+
+                            println("Itens do pedido:")
+                            var Item = false
+                            for (item in ordersItemsList) {
+                                if (item.orderNum == pedido.orderNum) {
+                                    println(" - Produto Código: ${item.productCode} - Quantidade: ${item.productQuantity} - Preço: R$${item.productSellPrice}")
+                                    Item = true
+                                }
+                            }
+                            if (!Item) {
+                                println("Esse pedido nao tem itens")
+                            }
+                        }
+                    }
+                }
                 6 -> {
                     println("Digite o nome do Cupom de desconto: ")
                     var couponName: String? = null
