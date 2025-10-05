@@ -36,10 +36,10 @@ enum class OrderStatus{
     ENTREGUE
 }
 
-val productsList: MutableList<Product> = mutableListOf()
-val ordersList: MutableList<Order> = mutableListOf()
-val ordersItemsList: MutableList<OrderItem> = mutableListOf()
-val discountCouponsList: MutableList<DiscountCoupon> = mutableListOf()
+val products: MutableList<Product> = mutableListOf()
+val orders: MutableList<Order> = mutableListOf()
+val ordersItems: MutableList<OrderItem> = mutableListOf()
+val discountCoupons: MutableList<DiscountCoupon> = mutableListOf()
 
 //fun readString(text: String): String{
 //    var entries: String? = null
@@ -50,38 +50,60 @@ val discountCouponsList: MutableList<DiscountCoupon> = mutableListOf()
 //}
 
 fun createProduct (data: Product){
-    productsList.add(data)
+    products.add(data)
 }
 
 fun updateProduct(field: String, productIndex: Int, newValue: Any){
     when(field){
-        "name" -> productsList[productIndex].name = newValue as String
-        "description" -> productsList[productIndex].description = newValue as String
-        "price" -> productsList[productIndex].price = newValue as Double
-        "quantity" -> productsList[productIndex].qtd = newValue as Int
+        "name" -> products[productIndex].name = newValue as String
+        "description" -> products[productIndex].description = newValue as String
+        "price" -> products[productIndex].price = newValue as Double
+        "quantity" -> products[productIndex].qtd = newValue as Int
     }
 }
 
 fun createOrder(data: Order){
-    ordersList.add(data)
+    orders.add(data)
 }
 
 fun addOrderItem(data: OrderItem){
-    ordersItemsList.add(data)
+    ordersItems.add(data)
 }
 
 fun cancelOrder (orderNum: Int) {
-    ordersList.removeIf { it.orderNum == orderNum }
+    orders.removeIf { it.orderNum == orderNum }
 
-    val orderItemsList: List<OrderItem> = ordersItemsList.filter {it.orderNum == orderNum}
+    val orderItemsList: List<OrderItem> = ordersItems.filter {it.orderNum == orderNum}
 
     for(item: OrderItem in orderItemsList){
         if(item.orderNum == orderNum){
-            val productIndex = productsList.indexOfFirst { it.productCode == item.productCode }
-            productsList[productIndex].qtd += item.productQuantity
+            val productIndex = products.indexOfFirst { it.productCode == item.productCode }
+            products[productIndex].qtd += item.productQuantity
         }
     }
 
-    ordersItemsList.removeIf { it.orderNum == orderNum }
+    ordersItems.removeIf { it.orderNum == orderNum }
 }
+
+fun findOrderByOrderNum(orderNum: Int): Order?{
+    return orders.find {it.orderNum == orderNum}
+}
+
+fun filterOrderByStatus(status: OrderStatus): List<Order> {
+    return orders.filter {it.status == status}
+}
+
+fun findOrderIndexByOrderNum(orderNum: Int): Int{
+    return orders.indexOfFirst { it.orderNum == orderNum }
+}
+
+fun findProductByProductCode(productCode: Int): Product?{
+    return products.find {it.productCode == productCode}
+}
+
+fun findProductIndexByProductCode(productCode: Int): Int{
+    return products.indexOfFirst { it.productCode == productCode }
+}
+
+
 
